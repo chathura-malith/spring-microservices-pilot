@@ -3,6 +3,7 @@ package com.chathura.lapmart.product_service_api.api;
 import com.chathura.lapmart.product_service_api.dto.request.RequestProductDto;
 import com.chathura.lapmart.product_service_api.service.ProductService;
 import com.chathura.lapmart.product_service_api.util.StandardResponseDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
-    public ResponseEntity<StandardResponseDto> create(@RequestBody RequestProductDto dto) {
+    public ResponseEntity<StandardResponseDto> create(@Valid @RequestBody RequestProductDto dto) {
         productService.create(dto);
         return new ResponseEntity<>(
                 new StandardResponseDto(201, "Product saved successfully!", null),
@@ -26,7 +27,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<StandardResponseDto> update(@PathVariable Long id, @RequestBody RequestProductDto dto) {
+    public ResponseEntity<StandardResponseDto> update(@PathVariable Long id, @Valid @RequestBody RequestProductDto dto) {
         productService.update(id, dto);
         return new ResponseEntity<>(
                 new StandardResponseDto(200, "Product updated successfully!", null),
