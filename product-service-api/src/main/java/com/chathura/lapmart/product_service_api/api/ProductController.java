@@ -63,4 +63,13 @@ public class ProductController {
                 HttpStatus.OK
         );
     }
+
+    @PutMapping("/update-stock/{id}")
+    public ResponseEntity<StandardResponseDto> updateStock(@PathVariable Long id, @RequestParam int quantity) {
+        productService.updateStock(id, quantity);
+        return new ResponseEntity<>(
+                new StandardResponseDto(200, "Stock updated successfully", null),
+                HttpStatus.OK
+        );
+    }
 }
