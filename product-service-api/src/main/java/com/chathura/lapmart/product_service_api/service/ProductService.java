@@ -14,4 +14,6 @@ public interface ProductService {
     public ResponseProductDto findById(Long id);
 
     public ProductPaginateResponseDto findAll(int page, int size, String searchText);
+
+    public void updateStock(Long id, int quantity);
 }

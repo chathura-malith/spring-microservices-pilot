@@ -5,6 +5,7 @@ import com.chathura.lapmart.product_service_api.dto.response.ResponseProductDto;
 import com.chathura.lapmart.product_service_api.dto.response.paginate.ProductPaginateResponseDto;
 import com.chathura.lapmart.product_service_api.entity.Product;
 import com.chathura.lapmart.product_service_api.exception.EntryNotFoundException;
+import com.chathura.lapmart.product_service_api.exception.InsufficientStockException;
 import com.chathura.lapmart.product_service_api.mapper.ProductMapper;
 import com.chathura.lapmart.product_service_api.repo.ProductRepo;
 import com.chathura.lapmart.product_service_api.service.ProductService;
@@ -63,5 +64,19 @@ public class ProductServiceImpl implements ProductService {
                 .collect(Collectors.toList());
 
         return new ProductPaginateResponseDto(dtoList, productPage.getTotalElements());
+    }
+
+    @Override
+    public void updateStock(Long id, int quantity) {
+        Product product = productRepo.findById(id)
+                .orElseThrow(() -> new EntryNotFoundException("Product not found"));
+
+        if (product.getStockQuantity() < quantity) {
+            throw new InsufficientStockException("Insufficient stock! Available: "
+                    + product.getStockQuantity() + ", Requested: " + quantity);
+        }
+
+        product.setStockQuantity(product.getStockQuantity() - quantity);
+        productRepo.save(product);
     }
 }
