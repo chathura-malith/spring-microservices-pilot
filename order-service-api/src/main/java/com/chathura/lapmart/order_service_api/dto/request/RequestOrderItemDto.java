@@ -15,7 +15,4 @@ public class RequestOrderItemDto {
     @NotNull(message = "Quantity is required")
     @Min(value = 1, message = "Quantity must be at least 1")
     private Integer quantity;
-
-    @NotNull(message = "Unit Price is required")
-    private Double unitPrice;
 }
