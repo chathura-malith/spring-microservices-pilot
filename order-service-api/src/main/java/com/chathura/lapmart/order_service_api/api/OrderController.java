@@ -1,6 +1,7 @@
 package com.chathura.lapmart.order_service_api.api;
 
 import com.chathura.lapmart.order_service_api.dto.request.RequestOrderDto;
+import com.chathura.lapmart.order_service_api.dto.request.RequestUpdateOrderDto;
 import com.chathura.lapmart.order_service_api.service.OrderService;
 import com.chathura.lapmart.order_service_api.util.StandardResponseDto;
 import jakarta.validation.Valid;
@@ -24,6 +25,17 @@ public class OrderController {
         return new ResponseEntity<>(
                 new StandardResponseDto(201, "Order created successfully!", null),
                 HttpStatus.CREATED
+        );
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<StandardResponseDto> update(
+            @PathVariable Long id, @RequestBody @Valid RequestUpdateOrderDto dto
+    ) {
+        orderService.update(id, dto);
+        return new ResponseEntity<>(
+                new StandardResponseDto(200, "Order updated successfully", null),
+                HttpStatus.OK
         );
     }
 }

@@ -1,5 +1,6 @@
 package com.chathura.lapmart.order_service_api.entity;
 
+import com.chathura.lapmart.order_service_api.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,6 +26,10 @@ public class Order {
 
     @Column(name = "customer_email", nullable = false, length = 100)
     private String customerEmail;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "order_status", nullable = false)
+    private OrderStatus orderStatus = OrderStatus.PENDING;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderItem> items;
