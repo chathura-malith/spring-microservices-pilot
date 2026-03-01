@@ -2,6 +2,7 @@ package com.chathura.lapmart.product_service_api.advisor;
 
 
 import com.chathura.lapmart.product_service_api.exception.EntryNotFoundException;
+import com.chathura.lapmart.product_service_api.exception.InsufficientStockException;
 import com.chathura.lapmart.product_service_api.util.StandardResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +37,14 @@ public class AppWideExceptionHandler {
 
         return new ResponseEntity<>(
                 new StandardResponseDto(400, "Validation Failed!", errors),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(InsufficientStockException.class)
+    public ResponseEntity<StandardResponseDto> handleInsufficientStockException(InsufficientStockException e) {
+        return new ResponseEntity<>(
+                new StandardResponseDto(400, e.getMessage(), null),
                 HttpStatus.BAD_REQUEST
         );
     }
