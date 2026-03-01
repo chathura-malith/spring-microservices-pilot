@@ -22,7 +22,8 @@ public interface OrderMapper {
     @Mapping(target = "processor", source = "product.processor")
     @Mapping(target = "quantity", source = "item.quantity")
     @Mapping(target = "unitPrice", source = "item.unitPrice")
-    ResponseOrderItemDto toResponseOrderItemDto(OrderItem item, ExternalProductDto product);
+    ResponseOrderItemDto
+    toResponseOrderItemDto(OrderItem item, ExternalProductDto product);
 
     @Mapping(target = "items", ignore = true)
     @Mapping(target = "totalAmount", ignore = true)
