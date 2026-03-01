@@ -3,10 +3,12 @@ package com.chathura.lapmart.order_service_api.service.impl;
 import com.chathura.lapmart.order_service_api.dto.external.ExternalProductDto;
 import com.chathura.lapmart.order_service_api.dto.request.RequestOrderDto;
 import com.chathura.lapmart.order_service_api.dto.request.RequestOrderItemDto;
+import com.chathura.lapmart.order_service_api.dto.request.RequestUpdateOrderDto;
 import com.chathura.lapmart.order_service_api.dto.response.ResponseOrderDto;
 import com.chathura.lapmart.order_service_api.dto.response.paginate.OrderPaginateResponseDto;
 import com.chathura.lapmart.order_service_api.entity.Order;
 import com.chathura.lapmart.order_service_api.entity.OrderItem;
+import com.chathura.lapmart.order_service_api.enums.OrderStatus;
 import com.chathura.lapmart.order_service_api.mapper.OrderMapper;
 import com.chathura.lapmart.order_service_api.proxy.ProductServiceProxy;
 import com.chathura.lapmart.order_service_api.repo.OrderRepo;
@@ -63,8 +65,36 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void update(Long id, RequestOrderDto dto) {
+    @Transactional
+    public void update(Long id, RequestUpdateOrderDto dto) {
+        Order existingOrder = orderRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+        if (existingOrder.getOrderStatus() != OrderStatus.PENDING) {
+            throw new RuntimeException("Order cannot be updated! Current status is: " + existingOrder.getOrderStatus());
+        }
 
+        for (OrderItem existingItem : existingOrder.getItems()) {
+            for (RequestOrderItemDto newItemDto : dto.getItems()) {
+
+                if (existingItem.getProductId().equals(newItemDto.getProductId())) {
+
+                    int oldQty = existingItem.getQuantity();
+                    int newQty = newItemDto.getQuantity();
+                    int difference = newQty - oldQty;
+
+                    if (difference != 0) {
+                        productServiceProxy.updateStock(existingItem.getProductId(),difference);
+
+                        existingItem.setQuantity(newQty);
+                    }
+                }
+            }
+        }
+        double finalTotal = existingOrder.getItems().stream()
+                .mapToDouble(item -> item.getUnitPrice() * item.getQuantity())
+                .sum();
+        existingOrder.setTotalAmount(finalTotal);
+        orderRepo.save(existingOrder);
     }
 
     @Override
