@@ -9,6 +9,8 @@ import com.chathura.lapmart.order_service_api.dto.response.paginate.OrderPaginat
 import com.chathura.lapmart.order_service_api.entity.Order;
 import com.chathura.lapmart.order_service_api.entity.OrderItem;
 import com.chathura.lapmart.order_service_api.enums.OrderStatus;
+import com.chathura.lapmart.order_service_api.exception.ActionNotAllowedException;
+import com.chathura.lapmart.order_service_api.exception.EntryNotFoundException;
 import com.chathura.lapmart.order_service_api.mapper.OrderMapper;
 import com.chathura.lapmart.order_service_api.proxy.ProductServiceProxy;
 import com.chathura.lapmart.order_service_api.repo.OrderRepo;
@@ -45,7 +47,7 @@ public class OrderServiceImpl implements OrderService {
             StandardResponseDto response = productServiceProxy.getProductById(itemDto.getProductId());
 
             if (response == null) {
-                throw new RuntimeException("Product not found: " + itemDto.getProductId());
+                throw new EntryNotFoundException("Product not found: " + itemDto.getProductId());
             }
 
             ExternalProductDto product = objectMapper.convertValue(response.getData(), ExternalProductDto.class);
@@ -68,9 +70,10 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public void update(Long id, RequestUpdateOrderDto dto) {
         Order existingOrder = orderRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new EntryNotFoundException("Order not found"));
         if (existingOrder.getOrderStatus() != OrderStatus.PENDING) {
-            throw new RuntimeException("Order cannot be updated! Current status is: " + existingOrder.getOrderStatus());
+            throw new ActionNotAllowedException(
+                    "Order status is " + existingOrder.getOrderStatus() + ". Action not allowed!");
         }
 
         for (OrderItem existingItem : existingOrder.getItems()) {
@@ -98,8 +101,20 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
+        Order order = orderRepo.findById(id)
+                .orElseThrow(() -> new EntryNotFoundException("Order not found"));
 
+        if (order.getOrderStatus() != OrderStatus.PENDING) {
+            throw new ActionNotAllowedException(
+                    "Order status is " + order.getOrderStatus() + ". Action not allowed!");
+        }
+
+        for (OrderItem item : order.getItems()) {
+            productServiceProxy.updateStock(item.getProductId(), -item.getQuantity());
+        }
+        orderRepo.delete(order);
     }
 
     @Override
