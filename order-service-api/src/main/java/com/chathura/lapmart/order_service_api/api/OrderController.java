@@ -38,4 +38,13 @@ public class OrderController {
                 HttpStatus.OK
         );
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<StandardResponseDto> delete(@PathVariable Long id) {
+        orderService.delete(id);
+        return new ResponseEntity<>(
+                new StandardResponseDto(204, "Order deleted and stock updated successfully",null),
+                HttpStatus.NO_CONTENT
+        );
+    }
 }
