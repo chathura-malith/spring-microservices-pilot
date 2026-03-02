@@ -5,6 +5,7 @@ import com.chathura.lapmart.order_service_api.dto.request.RequestOrderDto;
 import com.chathura.lapmart.order_service_api.dto.request.RequestOrderItemDto;
 import com.chathura.lapmart.order_service_api.dto.request.RequestUpdateOrderDto;
 import com.chathura.lapmart.order_service_api.dto.response.ResponseOrderDto;
+import com.chathura.lapmart.order_service_api.dto.response.ResponseOrderItemDto;
 import com.chathura.lapmart.order_service_api.dto.response.paginate.OrderPaginateResponseDto;
 import com.chathura.lapmart.order_service_api.entity.Order;
 import com.chathura.lapmart.order_service_api.entity.OrderItem;
@@ -18,6 +19,8 @@ import com.chathura.lapmart.order_service_api.service.OrderService;
 import com.chathura.lapmart.order_service_api.util.StandardResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -119,11 +122,52 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ResponseOrderDto findById(Long id) {
-        return null;
+        Order order = orderRepo.findById(id)
+                .orElseThrow(() -> new EntryNotFoundException("Order not found with ID: " + id));
+
+        ResponseOrderDto response = orderMapper.toResponseOrderDto(order);
+
+        List<ResponseOrderItemDto> itemDtos = new ArrayList<>();
+        for (OrderItem item : order.getItems()) {
+
+            StandardResponseDto proxyResponse = productServiceProxy.getProductById(item.getProductId());
+            ExternalProductDto product = objectMapper.convertValue(
+                    proxyResponse.getData(), ExternalProductDto.class
+            );
+
+            itemDtos.add(orderMapper.toResponseOrderItemDto(item, product));
+        }
+        response.setItems(itemDtos);
+        return response;
     }
 
     @Override
     public OrderPaginateResponseDto findAll(int page, int size, String searchText) {
-        return null;
+        Page<Order> orders = orderRepo.findAllWithSearch(searchText, PageRequest.of(page, size));
+        List<ResponseOrderDto> responseList = new ArrayList<>();
+
+        for (Order order : orders.getContent()) {
+            ResponseOrderDto orderDto = orderMapper.toResponseOrderDto(order);
+            List<ResponseOrderItemDto> itemDtos = new ArrayList<>();
+
+            for (OrderItem item : order.getItems()) {
+                StandardResponseDto proxyResponse = productServiceProxy.getProductById(item.getProductId());
+
+                ExternalProductDto product = objectMapper.convertValue(
+                        proxyResponse.getData(), ExternalProductDto.class
+                );
+
+                itemDtos.add(orderMapper.toResponseOrderItemDto(item, product));
+            }
+
+            orderDto.setItems(itemDtos);
+            responseList.add(orderDto);
+        }
+
+        return new OrderPaginateResponseDto(
+                orders.getTotalElements(),
+                responseList
+        );
     }
+
 }

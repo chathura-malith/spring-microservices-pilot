@@ -10,6 +10,8 @@ import com.chathura.lapmart.order_service_api.entity.OrderItem;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface OrderMapper {
 
@@ -34,4 +36,6 @@ public interface OrderMapper {
     @Mapping(target = "quantity", source = "dto.quantity")
     @Mapping(target = "unitPrice", source = "product.price")
     OrderItem toOrderItem(RequestOrderItemDto dto, ExternalProductDto product);
+
+    List<ResponseOrderDto> toResponseOrderDtoList(List<Order> orders);
 }

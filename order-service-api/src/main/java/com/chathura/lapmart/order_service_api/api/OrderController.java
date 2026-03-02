@@ -47,4 +47,24 @@ public class OrderController {
                 HttpStatus.NO_CONTENT
         );
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<StandardResponseDto> findById(@PathVariable Long id) {
+        return new ResponseEntity<>(
+                new StandardResponseDto(200, "Order details retrieved", orderService.findById(id)),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<StandardResponseDto> findAll(
+            @RequestParam int page,
+            @RequestParam int size,
+            @RequestParam String searchText) {
+        return new ResponseEntity<>(
+                new StandardResponseDto(200, "Orders list retrieved successfully",
+                        orderService.findAll(page, size, searchText)),
+                HttpStatus.OK
+        );
+    }
 }
