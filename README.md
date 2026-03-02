@@ -16,7 +16,7 @@ Client
   │
   ▼
 ┌─────────────────────┐
-│      API Gateway     │  :8080  (Spring Cloud Gateway)
+│      API Gateway     │  :9090  (Spring Cloud Gateway)
 │   + LoggingFilter    │
 └────────┬────────────┘
          │
@@ -24,7 +24,7 @@ Client
          ▼                      ▼                      ▼
 ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐
 │  Product Service  │  │  Order Service   │  │  Eureka Server   │
-│     :8082         │  │     :8083         │  │     :8761         │
+│     :9091         │  │     :9092        │  │     :8761         │
 │  (REST API, DB)   │  │  (REST + Feign)  │  │ (Service Registry)│
 └──────────────────┘  └──────────────────┘  └──────────────────┘
 ```
@@ -126,7 +126,7 @@ spring-microservices-pilot/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/spring-microservices-pilot.git
+git clone https://github.com/chathura-malith/spring-microservices-pilot.git
 cd spring-microservices-pilot
 ```
 
@@ -166,15 +166,15 @@ cd ../api-gateway
 | Service | Port | URL |
 |---|---|---|
 | Eureka Server | 8761 | http://localhost:8761 |
-| API Gateway | 8080 | http://localhost:8080 |
-| Product Service | 8082 | http://localhost:8082 |
-| Order Service | 8083 | http://localhost:8083 |
+| API Gateway | 9090 | http://localhost:9090 |
+| Product Service | 9091 | http://localhost:9091 |
+| Order Service | 9092 | http://localhost:9092 |
 
 ---
 
 ## 🔌 API Endpoints
 
-> All requests should go through the **API Gateway** at `http://localhost:8080`
+> All requests should go through the **API Gateway** at `http://localhost:9090`
 
 ### Product Service
 
@@ -260,6 +260,6 @@ This project is open-source and available under the [MIT License](LICENSE).
 
 ## 👤 Author
 
-**Chathura** — `com.chathura.lapmart`
+**A.M. Chathura Malith Ariyarathna**
 
 > Built as a pilot/learning project to explore Spring Boot Microservices architecture patterns.
