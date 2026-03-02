@@ -16,16 +16,16 @@ Client
   │
   ▼
 ┌─────────────────────┐
-│      API Gateway     │  :9090  (Spring Cloud Gateway)
-│   + LoggingFilter    │
+│      API Gateway    │ : 9090 (Spring Cloud Gateway)
+│   + LoggingFilter   │
 └────────┬────────────┘
          │
          ├──────────────────────┬──────────────────────┐
          ▼                      ▼                      ▼
 ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐
-│  Product Service  │  │  Order Service   │  │  Eureka Server   │
-│     :9091         │  │     :9092        │  │     :8761         │
-│  (REST API, DB)   │  │  (REST + Feign)  │  │ (Service Registry)│
+│  Product Service │  │  Order Service   │  │  Eureka Server   │
+│     :9091        │  │     :9092        │  │     :8761        │
+│  (REST API, DB)  │  │  (REST + Feign)  │  │(Service Registry)│
 └──────────────────┘  └──────────────────┘  └──────────────────┘
 ```
 
