@@ -56,7 +56,8 @@ spring-microservices-pilot/
 │       ├── entity/Product.java
 │       ├── dto/
 │       │   ├── request/RequestProductDto.java
-│       │   └── response/ResponseProductDto.java
+│       │   ├── response/ResponseProductDto.java
+│       │   └── response/paginate/ProductPaginateResponseDto.java
 │       ├── mapper/ProductMapper.java   (MapStruct)
 │       ├── repo/ProductRepo.java
 │       ├── service/
@@ -64,7 +65,7 @@ spring-microservices-pilot/
 │       │   └── impl/ProductServiceImpl.java
 │       ├── exception/
 │       │   ├── EntryNotFoundException.java
-│       │   └── InsufficientStockException.java
+│       │   ├── InsufficientStockException.java
 │       ├── advisor/AppWideExceptionHandler.java
 │       └── util/StandardResponseDto.java
 │
